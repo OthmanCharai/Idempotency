@@ -5,7 +5,7 @@ namespace OCharai\Idempotency\Middleware;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Services\IdempotencyService;
+use OCharai\Idempotency\Services\IdempotencyService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
