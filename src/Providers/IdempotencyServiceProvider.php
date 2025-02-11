@@ -14,7 +14,7 @@ class IdempotencyServiceProvider extends ServiceProvider
         );
 
         $this->replaceConfigRecursivelyFrom(
-            __DIR__ . '/../database.php',
+            __DIR__ . '/../config/database.php',
             'database'
         );
     }
