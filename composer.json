@@ -1,0 +1,31 @@
+{
+    "name": "ocharai/laravel-idempotency",
+    "description": "Laravel idempotency package with multiple storage support",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Othman Charai",
+            "email": "othman.fiver@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.0|^8.3",
+        "illuminate/support": "^8.0|^9.0|^10.0|^11.0",
+        "illuminate/redis": "^8.0|^9.0|^10.0|^11.0",
+        "symfony/http-foundation": "^7.2",
+        "illuminate/auth": "^8.0|^9.0|^10.0|^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "OCharai\\Idempotency\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "OCharai\\Idempotency\\IdempotencyServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable"
+}
