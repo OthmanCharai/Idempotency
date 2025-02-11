@@ -1,147 +1,145 @@
-# Laravel Idempotency Package
+# Laravel Idempotency
 
-Add idempotency support to your Laravel APIs easily. This package helps prevent duplicate operations by caching responses based on idempotency keys, particularly useful for payment processing, form submissions, and other critical operations.
-
-# Table of Contents
-
-| Section |
-|---------|
-| [What is Idempotency?](#what-is-idempotency) |
-| [Features](#features) |
-| [Installation](#installation) |
-| [Configuration](#configuration) |
-| [Usage](#usage) |
-| [Response Headers](#response-headers) |
-| [Examples](#examples) |
-| [Redis Inspection](#redis-inspection) |
-| [License](#license) |
-
-## What is Idempotency?
-
-Idempotency ensures that an API request produces the same result regardless of how many times it's sent. This is crucial for:
-- Payment processing
-- Order submissions
-- Data updates
-- Any operation that should not be duplicated
-
-For example, if a client sends a payment request but loses connection before receiving the response, it can safely retry the request with the same idempotency key. The server will return the original response without processing the payment twice.
+A robust Laravel package that provides idempotency support for your API endpoints with Redis storage. This package helps prevent duplicate operations when retrying API requests.
 
 ## Features
 
-* **Redis-Based Storage**: Fast and reliable response caching using Redis
-* **Configurable TTL**: Control how long responses are cached
-* **Custom Header Support**: Configure your own idempotency header name
-* **Method Filtering**: Apply idempotency only to specific HTTP methods
-* **Automatic Redis Configuration**: No manual Redis setup required
-* **User Authentication Integration**: Works with Laravel's authentication system
+- Redis-based storage for idempotency keys
+- Configurable TTL for idempotency keys
+- Support for multiple HTTP verbs (POST, PUT, PATCH, DELETE)
+- User-specific idempotency keys
+- Automatic response caching for successful JSON responses
+- ULID-based idempotency keys for security and uniqueness
+
+## Requirements
+
+- PHP ^7.4|^8.0|^8.3
+- Laravel ^8.0|^9.0|^10.0|^11.0
+- Redis server
 
 ## Installation
+
+You can install the package via composer:
 
 ```bash
 composer require ocharai/laravel-idempotency
 ```
 
+The package will automatically register its service provider.
+
 ## Configuration
 
-1. Publish the configuration (optional):
+Publish the configuration files:
+
 ```bash
-php artisan vendor:publish --tag=idempotency-config
+php artisan vendor:publish --provider="OCharai\Idempotency\Providers\IdempotencyServiceProvider"
 ```
 
-2. Configure in your `.env` file:
-```env
-# Idempotency Configuration
-IDEMPOTENCY_HEADER_KEY=X-Idempotency-Key
-IDEMPOTENCY_TTL=86400
+This will create two configuration files:
+- `config/idempotency.php`: Main package configuration
+- `config/database.php`: Redis connection configuration
 
-# Redis will use your existing Redis configuration
-REDIS_HOST=127.0.0.1
-REDIS_PORT=6379
-REDIS_DB=0
-```
+### Main Configuration Options
 
-Available configuration options in `config/idempotency.php`:
 ```php
 return [
+    // The header key used for idempotency
     'header_key' => env('IDEMPOTENCY_HEADER_KEY', 'X-Idempotency-Key'),
+
+    // Time-to-live for idempotency keys (in seconds)
     'ttl' => env('IDEMPOTENCY_TTL', 86400), // 1 day
+
+    // HTTP verbs that require idempotency
     'enforced_verbs' => [
         'POST',
         'PUT',
         'PATCH',
         'DELETE',
     ],
+
+    // Redis configuration
     'redis' => [
-        'connection' => 'idempotency',
+        'connection' => env('IDEMPOTENCY_REDIS_CONNECTION', 'idempotency'),
+        'prefix'     => 'idempotency:',
+    ],
+];
+```
+
+### Redis Configuration
+
+```php
+return [
+    'redis' => [
+        'idempotency' => [
+            'client'   => env('REDIS_CLIENT', 'redis'),
+            'url'      => env('REDIS_URL'),
+            'host'     => env('REDIS_HOST', '127.0.0.1'),
+            'username' => env('REDIS_USERNAME'),
+            'password' => env('REDIS_PASSWORD'),
+            'port'     => env('REDIS_PORT', '6379'),
+            'prefix'   => 'idempotency:',
+        ],
     ],
 ];
 ```
 
 ## Usage
 
-1. Register the middleware in `app/Http/Kernel.php`:
+1. Add the middleware to your routes or controller:
+
 ```php
-protected $routeMiddleware = [
-    'idempotent' => \OCharai\Idempotency\Middleware\IdempotencyMiddleware::class,
-];
-```
+use OCharai\Idempotency\Middleware\IdempotencyMiddleware;
 
-2. Use in your routes:
-```php
-Route::middleware(['idempotent'])->group(function () {
-    Route::post('/orders', 'OrderController@store');
-});
-```
+// In a route
+Route::post('/api/orders', [OrderController::class, 'store'])
+    ->middleware(IdempotencyMiddleware::class);
 
-3. Make requests with idempotency key:
-```http
-POST /api/orders
-X-Idempotency-Key: a valid ulid key 
-Content-Type: application/json
-
+// Or in a controller
+public function __construct()
 {
-    "product_id": 1,
-    "quantity": 5
+    $this->middleware(IdempotencyMiddleware::class);
 }
 ```
 
-## Examples
-
-### Basic Usage
-```php
-// OrderController.php
-public function store(Request $request)
-{
-    // Your logic here
-    // The middleware automatically handles idempotency
-    return response()->json(['order_id' => $orderId]);
-}
-```
-
-### Key Generation (Client Side)
-```php
-use Symfony\Component\Uid\Ulid;
-
-$idempotencyKey = (new Ulid())->toBase32();
-```
-
-## Redis Inspection
-
-Check stored responses in Redis:
+2. Make API requests with an idempotency key:
 
 ```bash
-# Connect to Redis
-redis-cli
-
-# List all idempotency keys
-KEYS idempotency:*
-
-# Get specific response
-GET idempotency:your-key-here
-
-# Get TTL
-TTL idempotency:your-key-here
+curl -X POST https://your-api.com/api/orders \
+    -H "X-Idempotency-Key: 01HNG4V2JXSC0XD6YE4CTWF5QM" \
+    -H "Content-Type: application/json" \
+    -d '{"product_id": 123}'
 ```
+
+Note: The idempotency key must be a valid ULID (Universally Unique Lexicographically Sortable Identifier).
+
+### How It Works
+
+1. When a request is made with an idempotency key, the middleware checks if the key exists in Redis
+2. If the key exists and the request method matches, the cached response is returned
+3. If the key doesn't exist, the request is processed normally
+4. On successful JSON responses, the response is cached with the idempotency key
+5. Subsequent requests with the same key within the TTL period will receive the cached response
+
+### Important Notes
+
+- Only successful JSON responses (2xx status codes) are cached
+- Idempotency keys are scoped to the authenticated user (if any) and HTTP method
+- Keys automatically expire after the configured TTL
+- Invalid or missing ULID keys will result in a 400 Bad Request response
+
+## Testing
+
+```bash
+composer test
+```
+
+## Security
+
+If you discover any security-related issues, please email othman.fiver@gmail.com instead of using the issue tracker.
+
+## Credits
+
+- [Othman Charai](https://github.com/OthmanCharai)
 
 ## License
 

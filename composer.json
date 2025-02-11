@@ -2,6 +2,14 @@
     "name": "ocharai/laravel-idempotency",
     "description": "Laravel idempotency package with multiple storage support",
     "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "laravel",
+        "idempotency",
+        "api",
+        "redis",
+        "cache"
+    ],
     "authors": [
         {
             "name": "Othman Charai",
@@ -15,9 +23,17 @@
         "symfony/http-foundation": "^7.2",
         "illuminate/auth": "^8.0|^9.0|^10.0|^11.0"
     },
+    "require-dev": {
+        "nunomaduro/larastan": "^3.0"
+    },
     "autoload": {
         "psr-4": {
             "OCharai\\Idempotency\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OCharai\\Idempotency\\Tests\\": "tests/"
         }
     },
     "extra": {
@@ -27,13 +43,14 @@
             ]
         }
     },
-    "minimum-stability": "stable",
-    "require-dev": {
-        "nunomaduro/larastan": "^3.0"
+    "suggest": {
+        "predis/predis": "Required to use Redis as storage (^2.0)",
+        "ext-redis": "Required to use Redis as storage"
     },
     "scripts": {
         "analyse": "./vendor/bin/phpstan analyse src/Services src/Middleware src/Providers --ansi",
         "pre-push": [
+            "@test",
             "@analyse"
         ],
         "post-install-cmd": [
@@ -44,5 +61,10 @@
             "[ -f .git/hooks/pre-push ] || echo '#!/bin/sh\ncomposer pre-push' > .git/hooks/pre-push",
             "chmod +x .git/hooks/pre-push"
         ]
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
     }
 }
