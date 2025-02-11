@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
+        bootstrap="vendor/autoload.php"
+        colors="true"
+        executionOrder="random"
+        failOnWarning="false"
+        failOnRisky="true"
+        failOnEmptyTestSuite="true"
+        beStrictAboutOutputDuringTests="true"
+        cacheDirectory=".phpunit.cache"
+        requireCoverageMetadata="false"
+>
+    <testsuites>
+        <testsuite name="Package">
+            <directory suffix="Test.php">./tests/Unit</directory>
+            <directory suffix="Test.php">./tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory suffix=".php">./src</directory>
+        </include>
+    </source>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="APP_KEY" value="base64:2fl+Ktvkfl+Fuz4Qp/A75G2RTiWVA/ZoKZvp6fiiM10="/>
+
+        <!-- Cache Configuration -->
+        <env name="CACHE_DRIVER" value="array"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="QUEUE_DRIVER" value="sync"/>
+
+        <!-- Laravel Configuration Values -->
+        <server name="cache.default" value="array"/>
+        <server name="cache.stores.array.driver" value="array"/>
+        <server name="database.redis.client" value="phpredis"/>
+        <server name="database.redis.default.host" value="127.0.0.1"/>
+        <server name="database.redis.default.password" value="null"/>
+        <server name="database.redis.default.port" value="6379"/>
+        <server name="database.redis.default.database" value="0"/>
+        <server name="database.redis.idempotency.host" value="127.0.0.1"/>
+        <server name="database.redis.idempotency.password" value="null"/>
+        <server name="database.redis.idempotency.port" value="6379"/>
+        <server name="database.redis.idempotency.database" value="1"/>
+    </php>
+</phpunit>

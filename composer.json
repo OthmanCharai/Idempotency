@@ -19,12 +19,13 @@
     "require": {
         "php": "^7.4|^8.0|^8.3",
         "illuminate/support": "^8.0|^9.0|^10.0|^11.0",
-        "illuminate/redis": "^8.0|^9.0|^10.0|^11.0",
         "symfony/http-foundation": "^7.2",
         "illuminate/auth": "^8.0|^9.0|^10.0|^11.0"
     },
     "require-dev": {
-        "nunomaduro/larastan": "^3.0"
+        "nunomaduro/larastan": "^3.0",
+        "orchestra/testbench": "^6.0|^7.0|^8.0|^9.0",
+        "phpunit/phpunit": "^9.0|^10.0"
     },
     "autoload": {
         "psr-4": {
@@ -48,6 +49,7 @@
         "ext-redis": "Required to use Redis as storage"
     },
     "scripts": {
+        "test": "./vendor/bin/phpunit",
         "analyse": "./vendor/bin/phpstan analyse src/Services src/Middleware src/Providers --ansi",
         "pre-push": [
             "@test",
