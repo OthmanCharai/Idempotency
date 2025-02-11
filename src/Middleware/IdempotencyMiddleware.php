@@ -27,7 +27,7 @@ readonly class IdempotencyMiddleware
 
         $headerKey = $request->headers->get($this->config->get('idempotency.header_key'));
 
-        if (is_null($headerKey) || !Str::ulid($headerKey)) {
+        if (is_null($headerKey) || !Str::isUlid($headerKey)) {
             return new JsonResponse(
                 [
                     'message' => 'invalid idempotence header key',
