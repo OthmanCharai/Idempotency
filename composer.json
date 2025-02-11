@@ -27,5 +27,22 @@
             ]
         }
     },
-    "minimum-stability": "stable"
+    "minimum-stability": "stable",
+    "require-dev": {
+        "nunomaduro/larastan": "^3.0"
+    },
+    "scripts": {
+        "analyse": "./vendor/bin/phpstan analyse src/Services src/Middleware src/Providers --ansi",
+        "pre-push": [
+            "@analyse"
+        ],
+        "post-install-cmd": [
+            "[ -f .git/hooks/pre-push ] || echo '#!/bin/sh\ncomposer pre-push' > .git/hooks/pre-push",
+            "chmod +x .git/hooks/pre-push"
+        ],
+        "post-update-cmd": [
+            "[ -f .git/hooks/pre-push ] || echo '#!/bin/sh\ncomposer pre-push' > .git/hooks/pre-push",
+            "chmod +x .git/hooks/pre-push"
+        ]
+    }
 }
