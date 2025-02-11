@@ -23,7 +23,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "OCharai\\Idempotency\\IdempotencyServiceProvider"
+                "OCharai\\Idempotency\\Providers\\IdempotencyServiceProvider"
             ]
         }
     },
