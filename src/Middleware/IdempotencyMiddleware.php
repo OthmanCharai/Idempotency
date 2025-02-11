@@ -1,6 +1,6 @@
 <?php
 
-namespace Middleware;
+namespace OCharai\Idempotency\Middleware;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Support\Arr;

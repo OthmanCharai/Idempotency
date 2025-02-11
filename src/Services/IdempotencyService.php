@@ -1,6 +1,6 @@
 <?php
 
-namespace Services;
+namespace OCharai\Idempotency\Services;
 
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Config\Repository;

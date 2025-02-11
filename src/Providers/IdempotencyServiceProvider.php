@@ -1,6 +1,6 @@
 <?php
 
-namespace Providers;
+namespace OCharai\Idempotency\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
