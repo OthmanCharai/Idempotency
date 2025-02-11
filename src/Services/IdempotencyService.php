@@ -16,7 +16,7 @@ readonly class IdempotencyService
     public function __construct(
         private RedisManager $redisManager,
         private Repository $config,
-        private readonly AuthManager $authManger
+        private AuthManager $authManger
     ) {
         $this->redisManager->connection($this->config->get('idempotency.redis.connection'));
         $this->authManger->guard($this->config->get('auth.defaults.guard'));
@@ -32,7 +32,7 @@ readonly class IdempotencyService
 
     // Get Stored Response
 
-    private function generateKey(string $key, string $method): bool
+    private function generateKey(string $key, string $method): string
     {
         return sprintf(
             '%s:%s:%s:%s',
@@ -51,7 +51,7 @@ readonly class IdempotencyService
         }
 
         $data = [
-            'response'  => $response->getContent(),
+            'response'  => $response->getData(),
             'status'    => $response->getStatusCode(),
             'timestamp' => Carbon::now(),
         ];
