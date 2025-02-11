@@ -14,8 +14,6 @@ return [
 
     'redis' => [
         'connection' => env('IDEMPOTENCY_REDIS_CONNECTION', 'idempotency'),
-        'host'       => env('IDEMPOTENCY_REDIS_HOST', '127.0.0.1'),
-        'port'       => env('IDEMPOTENCY_REDIS_PORT', 6379),
-        'database'   => env('IDEMPOTENCY_REDIS_DB', 1),
+        'prefix'     => 'idempotency:',
     ],
 ];

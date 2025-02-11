@@ -27,7 +27,7 @@ readonly class IdempotencyService
     {
         $stored = $this->redisManager->get($this->generateKey($key, $method));
 
-        return $stored ? json_decode($stored) : null;
+        return $stored ? json_decode($stored, true) : null;
     }
 
     // Get Stored Response
@@ -37,7 +37,7 @@ readonly class IdempotencyService
         return sprintf(
             '%s:%s:%s:%s',
             self::PREFIX,
-            $this->authManger->user()->getAuthIdentifier() ?? 'global',
+            $this->authManger->user()?->getAttribute('id') ?? 'global',
             $method,
             $key
         );
@@ -51,7 +51,7 @@ readonly class IdempotencyService
         }
 
         $data = [
-            'response'  => $response,
+            'response'  => $response->getContent(),
             'status'    => $response->getStatusCode(),
             'timestamp' => Carbon::now(),
         ];
